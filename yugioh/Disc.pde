@@ -1,7 +1,7 @@
 //デュエルディスク関連の設定はこのクラス
 
 class Disc {
-  int state[]=new int[10];//0:なし1:待機（セット状態）2:発動中（召喚）3:mqo表示（フィールドに存在）4:破壊　0~4:モンスター 5~9:魔法・トラップ
+  int state[]=new int[10];//0:なし1:待機（セット状態）2:？（攻撃表示）3:mqo表示（フィールドに存在）4:破壊　0~4:モンスター 5~9:魔法・トラップ
   int cardset;//一番最後に待機状態になったカードを記録 -1:なし
   int actuatetime[]=new int[10];//発動モーション
   int breaktime[]=new int[10];//破壊モーション
@@ -12,7 +12,36 @@ class Disc {
     cardset=-1;
   }
   void update() {
-    for (int i=0;i<10;i++) {
+    for (int i=0;i<5;i++) {
+      //モンスターゾーン
+      int pin=arduino.load(i);
+      switch(pin) {
+      case 0:
+        BreakingCard(i);
+        break;
+      case 1://攻撃表示
+        SettingCard(i);
+        break;
+      case 2://守備表示
+        SettingCard(i);
+        break;
+      }
+      switch(state[i]) {
+      case 1:
+        if (cardset==-1)cardset=i;
+        break;
+      case 2:
+        if (actuatetime[i]<10)actuatetime[i]++;
+        else state[i]=3;
+        break;
+      case 4:
+        if (breaktime[i]<10)breaktime[i]++;
+        else ResetState(i);
+        break;
+      }
+    }
+    for (int i=5;i<10;i++) {
+      //魔法トラップ・ゾーン
       int pin=arduino.load(i);
       switch(pin) {
       case 0:
@@ -43,7 +72,7 @@ class Disc {
   void SettingCard(int n) {
     if (state[n]!=0)return;
     state[n]=1;
-    if(n<5)cardset=n;
+    if (n<5)cardset=n;
     setSE.rewind();
     setSE.play();
   }
@@ -141,7 +170,7 @@ class Disc {
         }
         break;
       case 3:
-      //println("i="+i);
+        //println("i="+i);
         if (i<5) {
           //println("OK!");
           gl.glRotatef(90, 0, 1, 0);
