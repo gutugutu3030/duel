@@ -15,17 +15,20 @@ class Disc {
     for (int i=0;i<5;i++) {
       //モンスターゾーン
       int pin=arduino.load(i);
+      //ピンの状態によって分岐
       switch(pin) {
       case 0:
         BreakingCard(i);
         break;
       case 1://攻撃表示
-        SettingCard(i);
+        //SettingCard(i);
+        state[n]=1;//音は鳴らさない
         break;
       case 2://守備表示
-        SettingCard(i);
+        SettingCard(i);//音を鳴らしてstate変更
         break;
       }
+      //ゾーンの状態によって分岐
       switch(state[i]) {
       case 1:
         if (cardset==-1)cardset=i;
@@ -34,12 +37,15 @@ class Disc {
         if (actuatetime[i]<10)actuatetime[i]++;
         else state[i]=3;
         break;
+      case 3:
+        break;
       case 4:
         if (breaktime[i]<10)breaktime[i]++;
         else ResetState(i);
         break;
       }
     }
+    /*
     for (int i=5;i<10;i++) {
       //魔法トラップ・ゾーン
       int pin=arduino.load(i);
@@ -68,8 +74,10 @@ class Disc {
         break;
       }
     }
+    */
   }
   void SettingCard(int n) {
+    //音をならしてstate変更
     if (state[n]!=0)return;
     state[n]=1;
     if (n<5)cardset=n;
@@ -77,10 +85,11 @@ class Disc {
     setSE.play();
   }
   void ActuatingCard() {
+    //召還時はこの関数を呼べばいい
     int n=cardset;
     state[n]=2;
     actuatetime[n]=0;
-    if (disc.cardset<=4) {
+    if (cardset<=4) {
       summonSE.rewind();
       summonSE.play();
     }
@@ -88,7 +97,7 @@ class Disc {
       effectSE.rewind();
       effectSE.play();
     }
-    disc.cardset=-1;
+    cardset=-1;
   }
   void SummonCard(int n) {
     if (state[n]==3)return;
@@ -108,8 +117,8 @@ class Disc {
     actuatetime[n]=0;
   }
   boolean IfSet(int n) {//n=0,1,...,19
-    if (n<0)return false;
-    if (state[n]==1)return true;
+    if (n<0&&n>=10)return false;
+    if (state[n]==1&&state[n]==2)return true;
     return false;
   }
   boolean IfActuating(int n) {
@@ -148,8 +157,8 @@ class Disc {
         break;
       case 2:
         gl.glTranslatef(43*BattleScale, 0, 0);
-        if (disc.actuatetime[i]<=6) {
-          gl.glRotatef(-disc.actuatetime[i]*15, 0, 0, 1);
+        if (actuatetime[i]<=6) {
+          gl.glRotatef(-actuatetime[i]*15, 0, 0, 1);
           gl.glColor3f(0.50, 0, 0);
           gl.glBegin(gl.GL_POLYGON);
           gl.glVertex3f(0, 0, 30*BattleScale);
