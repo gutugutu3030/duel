@@ -9,9 +9,9 @@ class Arduino{
     stringData=trim(stringData);
    //コンマで区切ってデータを分解、整数化
     int data[]=int(split(stringData,','));
-    if(data.length==10){
+    if(data.length>=5){
       //データの値を代入
-      for(int i=0;i<data.length;i++){
+      for(int i=0;i<5;i++){
         status[i]=data[i];
       }
       //合図用データ送信
