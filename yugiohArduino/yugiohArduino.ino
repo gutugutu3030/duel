@@ -23,11 +23,11 @@ void loop() {
     Serial.read();
     delay(500);//通信の頻度を下げないと攻撃守備判定をミスる
     for (int i=0;i<10;i+=2) {
-      if(digitalRead(pin[i])&&digitalRead(pin[i+1]))Serial.print("2,");
-      else if(digitalRead(pin[i]))Serial.print("1,");
+      if(digitalRead(pin[i])==LOW&&digitalRead(pin[i+1])==LOW)Serial.print("2,");
+      else if(digitalRead(pin[i])==LOW)Serial.print("1,");
       else Serial.print("0,");
     }
-    for(int i=10;i<20){
+    for(int i=10;i<20;i++){
       Serial.print("0,");
     }
     Serial.println();
