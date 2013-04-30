@@ -22,7 +22,7 @@ class Disc {
         break;
       case 1://攻撃表示
         //SettingCard(i);
-        state[n]=1;//音は鳴らさない
+        state[i]=1;//音は鳴らさない
         break;
       case 2://守備表示
         SettingCard(i);//音を鳴らしてstate変更

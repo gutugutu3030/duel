@@ -4,6 +4,7 @@ class Arduino{
   Arduino(){
   }
   void serial(String str){
+    String stringData=port.readString();
     if(stringData!=null){
     //改行記号を取り除く
     stringData=trim(stringData);
