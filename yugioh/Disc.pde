@@ -117,7 +117,7 @@ class Disc {
     actuatetime[n]=0;
   }
   boolean IfSet(int n) {//n=0,1,...,19
-    if (n<0&&n>=10)return false;
+    if (n<0||n>=10)return false;
     if (state[n]==1&&state[n]==2)return true;
     return false;
   }

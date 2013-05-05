@@ -36,12 +36,12 @@ Disc disc=new Disc();
 
 void setup() {
   size(640, 480, OPENGL);
-  /*
+  
   String portName = Serial.list()[0];
   port = new Serial(this, portName, 9600);
   port.clear();
   port.write(65);
-  */
+  
   for(int i=0;i<cardscale.length;i++){
     cardscale[i]=1;
   }
@@ -162,5 +162,5 @@ void cardSetup() {
 }
 
 void serialEvent(Serial p){
-  arduino.serial(port.readStringUntil(10));//Arduinoからの情報を得る
+ arduino.serial(port.readStringUntil(10));//Arduinoからの情報を得る
 }

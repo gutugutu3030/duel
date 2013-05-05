@@ -22,15 +22,20 @@ void loop() {
   if (Serial.available()>0) {
     Serial.read();
     delay(500);//通信の頻度を下げないと攻撃守備判定をミスる
-    for (int i=0;i<10;i+=2) {
-      if(digitalRead(pin[i])==LOW&&digitalRead(pin[i+1])==LOW)Serial.print("2,");
-      else if(digitalRead(pin[i])==LOW)Serial.print("1,");
-      else Serial.print("0,");
-    }
+    String str="";
+    for (int i=4;i<13;i+=2) {
+      if(digitalRead(pin[i])==LOW&&digitalRead(pin[i+1])==LOW)str=str+"2";//Serial.print(2);
+      else if(digitalRead(pin[i])==LOW)str=str+"1";//Serial.print(1);
+      else str=str+"0";//Serial.print(0);
+      str=str+",";//Serial.print(",");
+    }  
+    /*
     for(int i=10;i<20;i++){
       Serial.print("0,");
     }
-    Serial.println();
+    */
+    Serial.println(str);
+    
   }
 }
 
