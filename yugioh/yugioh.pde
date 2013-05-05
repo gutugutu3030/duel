@@ -16,6 +16,7 @@ Serial port;
 GSCapture cam;
 MultiMarker nya;
 MultiMarker cardar;
+int id[];
 
 
 float BattleScale=1.0;//フィールドの大きさ
@@ -36,13 +37,13 @@ Disc disc=new Disc();
 
 void setup() {
   size(640, 480, OPENGL);
-  
+
   String portName = Serial.list()[0];
   port = new Serial(this, portName, 9600);
   port.clear();
   port.write(65);
-  
-  for(int i=0;i<cardscale.length;i++){
+
+  for (int i=0;i<cardscale.length;i++) {
     cardscale[i]=1;
   }
 
@@ -65,6 +66,7 @@ void setup() {
 }
 
 void draw() {
+  disc.print();
   if (cam.available()==false)return;
   cam.read();
   background(0);
@@ -77,14 +79,17 @@ void draw() {
   PGraphicsOpenGL pgl=(PGraphicsOpenGL) g;
   GL gl=pgl.beginGL();
   //カード読み取り待機
-  if (disc.IfSet(disc.cardset)) {
+  println(""+disc.cardset);
+  if (disc.cardset!=-1&&(disc.state[disc.cardset]==1||disc.state[disc.cardset]==2)) {
     //監視
+    
     for (int j=0;j<cardnum;j++) {
-      if (cardar.isExistMarker(j)) {
+      if (cardar.isExistMarker(id[j])) {
         cp=new LocalContentProvider(this, dataPath(card[j]));
-        println(disc.cardset);
+        println("召喚："+disc.cardset);
         md[disc.cardset]=KGLModelData.createGLModelPs(this, gl, null, this.cp, cardscale[j], KGLExtensionCheck.IsExtensionSupported(gl, "GL_ARB_vertex_buffer_object"), true);
         disc.ActuatingCard();
+        break;
       }
     }
   }
@@ -107,10 +112,10 @@ void draw() {
     gl.glCullFace(GL.GL_FRONT);
     //光源の設定
     mySetLight(gl, 0, -100, 100);
-    
+
     gl.glRotatef(90, 1, 0, 0);//立たせる
     gl.glRotatef(180, 0, 1, 0);//正面を向かせる
-    
+
     //各々で違う処理は強引にswitch文へ・・・
     disc.draw(gl);
     //md.draw();
@@ -155,12 +160,14 @@ void cardSetup() {
   cardar=new MultiMarker(this, width, height, "camera_para.dat", NyAR4PsgConfig.CONFIG_PSG);
   //カードの登録をするよ
   //マーカーを使えるようにする
+  id=new int[1];
   card[0]="ninja.mqo";//試しに攻撃力100守備力200の忍者を登録
   for (int i=0;i<1;i++) {
-    cardar.addNyIdMarker(1+i, 40);
+    id[i]=cardar.addNyIdMarker(1+i, 40);
   }
 }
 
-void serialEvent(Serial p){
- arduino.serial(port.readStringUntil(10));//Arduinoからの情報を得る
+void serialEvent(Serial p) {
+  arduino.serial(port.readStringUntil(10));//Arduinoからの情報を得る
 }
+

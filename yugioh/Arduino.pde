@@ -4,15 +4,12 @@ class Arduino{
   Arduino(){
   }
   void serial(String str){
-    //String stringData=port.readStringUntil(10);
-    //String stringData=port.readString();
-    //println(stringData);
     if(str!=null){
     //改行記号を取り除く
     str=trim(str);
     //コンマで区切ってデータを分解、整数化
     int data[]=int(split(str,','));
-    println("length:"+data.length+" "+Arrays.toString(data));
+    //println("length:"+data.length+" "+Arrays.toString(data));
     if(data.length>=5){
       //データの値を代入
       for(int i=0;i<5;i++){

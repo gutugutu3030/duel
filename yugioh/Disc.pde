@@ -1,7 +1,7 @@
 //デュエルディスク関連の設定はこのクラス
 
 class Disc {
-  int state[]=new int[10];//0:なし1:待機（セット状態）2:？（攻撃表示）3:mqo表示（フィールドに存在）4:破壊　0~4:モンスター 5~9:魔法・トラップ
+  int state[]=new int[10];//0:なし1:（守備表示）2:（攻撃表示）3:mqo待機　4:mqo表示（フィールドに存在）5:表示中 6:破壊　0~4:モンスター 5~9:魔法・トラップ
   int cardset;//一番最後に待機状態になったカードを記録 -1:なし
   int actuatetime[]=new int[10];//発動モーション
   int breaktime[]=new int[10];//破壊モーション
@@ -21,25 +21,26 @@ class Disc {
         BreakingCard(i);
         break;
       case 1://攻撃表示
+        if(state[i]==0){
         //SettingCard(i);
-        state[i]=1;//音は鳴らさない
+        state[i]=2;//音は鳴らさない
+        cardset=i;
+        }
         break;
       case 2://守備表示
+        if(state[i]==0){
+        //SettingCard(i);
         SettingCard(i);//音を鳴らしてstate変更
+        }
         break;
       }
       //ゾーンの状態によって分岐
       switch(state[i]) {
-      case 1:
-        if (cardset==-1)cardset=i;
-        break;
-      case 2:
-        if (actuatetime[i]<10)actuatetime[i]++;
-        else state[i]=3;
-        break;
-      case 3:
-        break;
       case 4:
+        if (actuatetime[i]<10)actuatetime[i]++;
+        else state[i]=5;
+        break;
+      case 6:
         if (breaktime[i]<10)breaktime[i]++;
         else ResetState(i);
         break;
@@ -61,10 +62,7 @@ class Disc {
         break;
       }
       switch(state[i]) {
-      case 1:
-        if (cardset==-1)cardset=i;
-        break;
-      case 2:
+      case 3:
         if (actuatetime[i]<10)actuatetime[i]++;
         else state[i]=3;
         break;
@@ -87,7 +85,7 @@ class Disc {
   void ActuatingCard() {
     //召還時はこの関数を呼べばいい
     int n=cardset;
-    state[n]=2;
+    state[n]=4;
     actuatetime[n]=0;
     if (cardset<=4) {
       summonSE.rewind();
@@ -100,12 +98,12 @@ class Disc {
     cardset=-1;
   }
   void SummonCard(int n) {
-    if (state[n]==3)return;
-    state[n]=3;
+    if (state[n]==4)return;
+    state[n]=4;
   }
   void BreakingCard(int n) {
-    if (state[n]==0||state[n]==4)return;
-    state[n]=4;
+    if (state[n]==0||state[n]==6)return;
+    state[n]=6;
     breaktime[n]=0;
 
     breakSE.rewind();
@@ -122,15 +120,15 @@ class Disc {
     return false;
   }
   boolean IfActuating(int n) {
-    if (state[n]==2)return true;
+    if (state[n]==4)return true;
     return false;
   }
   boolean IfSummon(int n) {
-    if (state[n]==3)return true;
+    if (state[n]==5)return true;
     return false;
   }
   boolean IfBreaking(int n) {
-    if (state[n]==4)return true;
+    if (state[n]==6)return true;
     return false;
   }
   void draw(GL gl) {
@@ -147,6 +145,7 @@ class Disc {
       }
       switch(state[i]) {
       case 1:
+      case 2:
         gl.glColor3f(0.50, 0, 0);
         gl.glBegin(gl.GL_POLYGON);
         gl.glVertex3f(43*BattleScale, 0, 30*BattleScale);
@@ -155,7 +154,7 @@ class Disc {
         gl.glVertex3f(43*BattleScale, 0, -30*BattleScale);
         gl.glEnd();
         break;
-      case 2:
+      case 4:
         gl.glTranslatef(43*BattleScale, 0, 0);
         if (actuatetime[i]<=6) {
           gl.glRotatef(-actuatetime[i]*15, 0, 0, 1);
@@ -178,7 +177,7 @@ class Disc {
           gl.glEnd();
         }
         break;
-      case 3:
+      case 5:
         //println("i="+i);
         if (i<5) {
           //println("OK!");
@@ -197,11 +196,14 @@ class Disc {
           gl.glEnd();
         }
         break;
-      case 4:
+      case 6:
         break;
       }
       gl.glPopMatrix();
     }
+  }
+  void print(){
+    println("state:"+Arrays.toString(state));
   }
 }
 
