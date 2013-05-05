@@ -12,7 +12,7 @@ void setup() {
   }
 
   for (int i=0;i<PIN;i++) {
-    pinMode(pin[i], INPUT);
+    pinMode(pin[i], INPUT_PULLUP);
   }
   //シリアル通信開始
   Serial.begin(9600);

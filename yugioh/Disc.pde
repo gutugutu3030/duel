@@ -23,14 +23,14 @@ class Disc {
       case 1://攻撃表示
         if(state[i]==0){
         //SettingCard(i);
-        state[i]=2;//音は鳴らさない
-        cardset=i;
+        SettingCard(i);//音を鳴らしてstate変更
         }
         break;
       case 2://守備表示
         if(state[i]==0){
         //SettingCard(i);
-        SettingCard(i);//音を鳴らしてstate変更
+        state[i]=2;//音は鳴らさない
+        cardset=i;
         }
         break;
       }
